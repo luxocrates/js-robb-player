@@ -322,8 +322,7 @@ export function playerTick(
      * I've tried to follow the disassembly's vibrato implementation, but from
      * what I'm seeing, the base note is the lowest note of the oscillation, not
      * the center point, meaning this is going to end up pretty sharp. And
-     * indeed it turns out that way. It also sounds to have a higher-amplitude
-     * oscillation than the real thing.
+     * indeed it turns out that way.
      */
     function vibrato() {
       const { vibratoDepth } = song.instruments[trackState.instNum]!;
@@ -336,7 +335,7 @@ export function playerTick(
       const nextFreq = song.freqs[trackState.noteNum + 1];
       
       let freqDelta = nextFreq - thisFreq;
-      for (let i = 0; i < vibratoDepth; i++) {
+      for (let i = vibratoDepth; i > -1; i--) {
         freqDelta = Math.floor(freqDelta / 2);
       }
 
