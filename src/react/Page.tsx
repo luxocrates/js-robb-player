@@ -34,6 +34,11 @@ export const Page = () => {
   return (
     <>
       <h1>JavaScript Robb Song Player</h1>
+      <p>
+        <a href="https://github.com/luxocrates/js-robb-player">
+          https://github.com/luxocrates/js-robb-player
+        </a>
+      </p>
       {/* Need a way to shut the SID up first */}
       {/* <button onClick={stop}>Stop</button> */}
 
