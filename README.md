@@ -2,6 +2,7 @@
 
 > [!TIP]
 > [See it running here](https://luxocrates.github.io/js-robb-player/)
+> (iOS not currently supported)
 
 Back in the mid-eighties, musician/programmer Rob Hubbard wrote some iconic game
 music for the Commodore 64 computer.
