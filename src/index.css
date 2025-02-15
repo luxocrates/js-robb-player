@@ -104,3 +104,29 @@ button:focus-visible {
 button {
   transition: transform 50ms ease-out;
 }
+
+.trackpos {
+  outline-offset: 2px;
+  outline: 3px solid #0004;
+}
+
+.trackRadios {
+  margin-top: -16px;
+  margin-bottom: 10px;
+}
+
+button.radio {
+  padding: 6px 12px;
+  font-size: 12px;
+  border-radius: 30px;
+  background-color: transparent;
+  min-width: 50px;
+}
+
+button.radio.selected {
+  background-color: #0001;
+}
+
+h4 {
+  margin-top: 40px;
+}
