@@ -78,6 +78,8 @@ type TrackState = {
 
   pulseDir: number;
   pulseDelay: number;
+
+  nextNoteIsNewPattern: boolean;  // Just for the listeners
 };
 
 function makeDefaultTrackState (): TrackState {
@@ -97,6 +99,7 @@ function makeDefaultTrackState (): TrackState {
     voicectrl: 0,
     pulseDir: 0,
     pulseDelay: 0,
+    nextNoteIsNewPattern: false,
   };
 };
 
@@ -169,20 +172,6 @@ export function playerTick(
         const trackState = playerState.trackStates[voice];
     
         function actionNextInTrack() {
-
-          // Since posWithinTrack was cueing up the _next_ position, tell the
-          // listener we've now reached it. Then cue up the next one.
-          if (listeners.onTrackAdvance) listeners.onTrackAdvance(
-            voice,
-            trackState.posWithinTrack,            
-            song.tracks[voice][trackState.posWithinTrack],
-          );
-
-          // console.log(
-          //   "*** actionNextInTrack, voice", voice,
-          //   "trackState.posWithinTrack =", trackState.posWithinTrack
-          // );
-    
           trackState.pat = song.tracks[voice][trackState.posWithinTrack];
 
           // pat $ff = loop
@@ -199,14 +188,30 @@ export function playerTick(
           }
 
           trackState.posWithinPat = 0;
-    
           trackState.posWithinTrack++;
+          
+          // Note that we don't trigger the onTrackAdvance listener now. We've
+          // queued up the first note from the new track, but not played it yet.
+          // Raise this flag to tell the code that will later play it to report
+          // it as a new track pos/pattern.
+          trackState.nextNoteIsNewPattern = true;
         }
     
         function actionNextInPat() {
-    
+          if (trackState.nextNoteIsNewPattern) {
+            // The trackState.posWithinTrack has advanced already, so this note
+            // is coming from `posWithinTrack - 1`.
+            trackState.nextNoteIsNewPattern = false;
+            if (listeners.onTrackAdvance) listeners.onTrackAdvance(
+              voice,
+              trackState.posWithinTrack - 1,           
+              song.tracks[voice][trackState.posWithinTrack - 1],
+            );
+          }
+
           // Since posWithinPat was cueing up the _next_ position, tell the
-          // listener we've now reached it. Then cue up the next one.
+          // listener we've now reached it before advancing it to cue up the
+          // next one.
           if (listeners.onPatAdvance) listeners.onPatAdvance(
             voice,
             trackState.posWithinPat
