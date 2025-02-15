@@ -73,15 +73,15 @@ button:focus-visible {
   text-align: center;
 }
 
-.activeOnVoice0 { background-color: hsl(339 100% 88% / 1) }
-.activeOnVoice1 { background-color: hsl(192 100% 88% / 1) }
-.activeOnVoice2 { background-color: hsl(55 100% 88% / 1) }
+.activeOnVoice0 { background-color: hsl(339 100% 88%) }
+.activeOnVoice1 { background-color: hsl(192 100% 88%) }
+.activeOnVoice2 { background-color: hsl(55 100% 88%) }
 
-.activeOnVoice0.activeOnVoice1 { background-color: hsl(240 100% 88% / 1) }
-.activeOnVoice0.activeOnVoice2 { background-color: hsl(0 100% 88% / 1) }
-.activeOnVoice1.activeOnVoice2 { background-color: hsl(120 100% 88% / 1) }
+.activeOnVoice0.activeOnVoice1 { background-color: hsl(240 100% 88%) }
+.activeOnVoice0.activeOnVoice2 { background-color: hsl(0 100% 88%) }
+.activeOnVoice1.activeOnVoice2 { background-color: hsl(120 100% 88%) }
 
-.activeOnVoice0.activeOnVoice1.activeOnVoice2 { background-color: hsl(120 0% 88% / 1) }
+.activeOnVoice0.activeOnVoice1.activeOnVoice2 { background-color: hsl(120 0% 88%) }
 
 .changingNumber {
   display: inline-block;
@@ -92,6 +92,15 @@ button:focus-visible {
   border-radius: 3px;
 }
 
-.voice0 .changingNumber { background-color: hsl(339 100% 88% / 1); }
-.voice1 .changingNumber { background-color: hsl(192 100% 88% / 1); }
-.voice2 .changingNumber { background-color: hsl(55 100% 88% / 1); }
+.voice0 .changingNumber { background-color: hsl(339 100% 88%); }
+.voice1 .changingNumber { background-color: hsl(192 100% 88%); }
+.voice2 .changingNumber { background-color: hsl(55 100% 88%); }
+
+.fresh {
+  transform: scale(1.075);
+  filter: brightness(1.03);
+}
+
+button {
+  transition: transform 50ms ease-out, filter 50ms ease-out;
+}

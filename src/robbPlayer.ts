@@ -131,6 +131,9 @@ export type PlayerListeners = {
   /** A pattern is advancing to a new note */
   onPatAdvance?: (voice: number, patPos: number) => void;
 
+  /** A new note has been played */
+  onNewNote?: (voice: number, instNum: number) => void;
+
   /** An instrument change just happened */
   onNewInstrument?: (voice: number, instNum: number) => void;
 
@@ -293,6 +296,10 @@ export function playerTick(
             
             pokeAttackDecay(voice, instrument.attackDecay);
             pokeSustainRelease(voice, instrument.sustainRelease);
+
+            if (listeners.onNewNote) {
+              listeners.onNewNote(voice, trackState.instNum);
+            }
           }
     
           const byte4 = song.patterns[trackState.pat].bytes[trackState.posWithinPat];

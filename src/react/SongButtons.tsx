@@ -88,11 +88,32 @@ const listeners: PlayerListeners = {
     removeActivePatForVoice(voice);
     activePatForVoice[voice] = pat;
     addActivePatForVoice(voice);
+
+    const els = document.getElementsByClassName(`pattern${pat}`);
+    for (const el of els) {
+      el.classList.add("fresh");
+      setTimeout(
+        () => el.classList.remove("fresh"),
+        68
+      );
+    }
   },
 
   onPatAdvance(voice, patPos) {
     const el = document.getElementById(`track${voice}patpos`);
     el!.innerText = String(patPos);
+  },
+
+  onNewNote(voice, instNum) {
+    void voice;
+    const els = document.getElementsByClassName(`inst${instNum}`);
+    for (const el of els) {
+      el.classList.add("fresh");
+      setTimeout(
+        () => el.classList.remove("fresh"),
+        68
+      );
+    }
   },
 
   onNewInstrument(voice, instNum) {

@@ -100,7 +100,7 @@ let setVolumeToHost: (voice: number, value: number) => void = () => {};
 
 type Adsr = {
   voice: number;
-  phase: "off" | "attack" | "sustain" | "decay" | "release";
+  phase: "off" | "attack" | "decay" | "sustain" | "release";
   value: number;
   multiplier: number;
   curveOffset: number;
