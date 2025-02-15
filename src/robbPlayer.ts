@@ -124,6 +124,12 @@ export type PlayerListeners = {
 
   /** A pattern is advancing to a new note */
   onPatAdvance?: (voice: number, patPos: number) => void;
+
+  /** An instrument change just happened */
+  onNewInstrument?: (voice: number, instNum: number) => void;
+
+  /** The song reached its end (0xfe pattern) */
+  onStop?: () => void;
 };
 
 export function playerTick(
@@ -159,8 +165,8 @@ export function playerTick(
           // listener we've now reached it. Then cue up the next one.
           if (listeners.onTrackAdvance) listeners.onTrackAdvance(
             voice,
-            trackState.posWithinTrack,
-            trackState.pat
+            trackState.posWithinTrack,            
+            song.tracks[voice][trackState.posWithinTrack],
           );
 
           // console.log(
@@ -179,6 +185,7 @@ export function playerTick(
           // pat $fe = done
           if (trackState.pat === 0xfe) {
             playerState.isPlaying = false;
+            if (listeners.onStop) listeners.onStop();
             return;
           }
 
@@ -235,6 +242,10 @@ export function playerTick(
               else {
                 // instrument change
                 trackState.instNum = byte2 & 0x7f;
+
+                if (listeners.onNewInstrument) {
+                  listeners.onNewInstrument(voice, trackState.instNum);
+                }
               }
             }
       

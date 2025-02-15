@@ -12,60 +12,115 @@ import gremlins0 from "../robbSongs/Gremlins0";
 import warhawk0 from "../robbSongs/Warhawk0";
 import oneMan0 from "../robbSongs/One_Man_and_his_Droid0";
 
-import { SongButtons } from "./SongButtons";
+import { type RobbSong } from "../robbPlayer";
 
-const songs = [
-  { song: monty0, name: "Monty On The Run song 0", warn: false },
-  { song: monty1, name: "Monty On The Run song 1", warn: false },
-  { song: monty2, name: "Monty On The Run song 2", warn: false },
-  { song: commando0, name: "Commando song 0", warn: true },
-  { song: commando1, name: "Commando song 1", warn: true },
-  { song: commando2, name: "Commando song 2", warn: true },
-  { song: crazyComets0, name: "Crazy Comets song 0", warn: true },
-  { song: masterOfMagic0, name: "Master Of Magic song 0", warn: true },
-  { song: gremlins0, name: "Gremlins song 0", warn: true },
-  { song: warhawk0, name: "Warhawk song 0", warn: true },
-  { song: oneMan0, name: "One Man and his Droid song 0", warn: true },
+import { SongButtons } from "./SongButtons";
+import { useRobbPlayerContext } from "./RobbPlayerProvider";
+
+export type CompatibilityWarning = "monty" | "wait15s" | "speed";
+
+const songs: {
+  song: RobbSong,
+  name: string,
+  warnings: CompatibilityWarning[],
+}[] = [
+  {
+    song: monty0,
+    name: "Monty On The Run song 0",
+    warnings: [],
+  },
+  {
+    song: monty1,
+    name: "Monty On The Run song 1",
+    warnings: [],
+  },
+  {
+    song: monty2,
+    name: "Monty On The Run song 2",
+    warnings: [],
+  },
+  {
+    song: commando0,
+    name: "Commando song 0",
+    warnings: ["monty"],
+  },
+  {
+    song: commando1,
+    name: "Commando song 1",
+    warnings: ["monty", "speed"],
+  },
+  {
+    song: commando2,
+    name: "Commando song 2",
+    warnings: ["monty"],
+  },
+  {
+    song: crazyComets0,
+    name: "Crazy Comets song 0",
+    warnings: ["monty"],
+  },
+  {
+    song: masterOfMagic0,
+    name: "Master Of Magic song 0",
+    warnings: ["monty"],
+  },
+  {
+    song: gremlins0,
+    name: "Gremlins song 0",
+    warnings: ["monty"],
+  },
+  {
+    song: warhawk0,
+    name: "Warhawk song 0",
+    warnings: ["monty", "wait15s"],
+  },
+  {
+    song: oneMan0,
+    name: "One Man and his Droid song 0",
+    warnings: ["monty"],
+  },
 ];
 
 export const Page = () => {
   const [ songIndex, setSongIndex ] = useState(0);
+  const { stop } = useRobbPlayerContext();
 
   return (
     <>
       <h1>JavaScript Robb Song Player</h1>
       <p>
-        <a href="https://github.com/luxocrates/js-robb-player">
+        A JavaScript/
+        <a
+          href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          WebAudio
+        </a>
+        -native implementation of Rob Hubbard’s famous Commodore 64 chipmusic
+        <br />
+        <a
+          href="https://github.com/luxocrates/js-robb-player"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           https://github.com/luxocrates/js-robb-player
         </a>
       </p>
-      {/* Need a way to shut the SID up first */}
-      {/* <button onClick={stop}>Stop</button> */}
+      <p>
+        😔 Apologies — the player doesn’t currently work on iOS
+      </p>
 
-      {
-        [0, 1, 2].map(
-          (voice) => (
-            <div key={voice} style={{ fontFamily: "monospace" }}>
-              Voice {voice} track pos:
-              {" "}
-              <span id={`track${voice}pos`}>(not started)</span>
-              {" "}
-              pat:
-              {" "}
-              <span id={`track${voice}pat`}>(not started)</span>{" "}
-              pos:
-              {" "}
-              <span id={`track${voice}patpos`}>(not started)</span>
-            </div>
-          )
-        )
-      }
-  
+      <h3>{songs[songIndex].name}</h3>
+
       <div>
         <button
           disabled={songIndex === 0}
           onClick={
-            () => setSongIndex(i => Math.max(i - 1, 0))
+            () => {
+              setSongIndex(i => Math.max(i - 1, 0))
+              stop();
+            }
           }
           >
           ◀
@@ -73,16 +128,24 @@ export const Page = () => {
         <button
           disabled={songIndex === songs.length - 1}
           onClick={
-            () => setSongIndex(i => Math.min(i + 1, songs.length - 1))
+            () => {
+              setSongIndex(i => Math.min(i + 1, songs.length - 1))
+              stop();
+            }
           }
           >
           ▶
         </button>
       </div>
 
-      <h3>{songs[songIndex].name}</h3>
-
-      <SongButtons song={songs[songIndex].song} warn={songs[songIndex].warn} />
+      <SongButtons
+        key={
+          // Force a re-paint
+          songIndex
+        }
+        song={songs[songIndex].song}
+        warnings={songs[songIndex].warnings}
+      />
     </>
   );
 };

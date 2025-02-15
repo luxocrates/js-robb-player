@@ -49,7 +49,10 @@ export const RobbPlayerProvider: FC<{ children: ReactNode }> = ({ children }) =>
             20
           );
         },
-        stop: () => {          
+        stop: () => {
+          // Set SID master output volume to zero
+          sidContext.sid.write_d400_d7ff(0xd418, 0x00);
+          
           removeInterval();
           sidContext.stop();
         },

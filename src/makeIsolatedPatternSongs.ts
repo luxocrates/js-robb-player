@@ -31,9 +31,9 @@ function makeIsolatedPatternSong(song: RobbSong, num: number): RobbSong {
   };
 
   /**
-   * A non-silent instrument to used as instrument 0 if one wasn't defined.
+   * A non-silent instrument to used as instrument `num` if one wasn't defined.
    * This is needed because a pattern might not start with an instrument change,
-   * so we need something, audible, in the default slot.
+   * so we need an audible placeholder in the default slot.
    */
   const placeholderInstrument: RobbInstrument = {
     pulseWidthLo:   0x00,
@@ -52,20 +52,23 @@ function makeIsolatedPatternSong(song: RobbSong, num: number): RobbSong {
     0x9f,
     // Instrument number: the index of the `silentInstrument` we'll be adding
     song.instruments.length,
-    // Pitch: whatever
+    // Pitch: doesn't matter
     0,
     // End of pattern
     0xff
   ];
   
+  const silentPatternIndex = song.patterns.length;
+
   return {
     tracks: [
-      [0, 1, 0xfe],  // The copied pattern, then silence and end
-      [1, 0xff],     // Repeating silence
-      [1, 0xff],     // "
+      [num, silentPatternIndex, 0xfe],
+      [silentPatternIndex, 0xff],
+      [silentPatternIndex, 0xff],
     ],
     patterns: [
-      song.patterns[num],
+      ...song.patterns,
+      // This is now in position silentPatternIndex
       silentPattern,
     ],
 
