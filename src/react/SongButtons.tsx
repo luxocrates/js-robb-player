@@ -108,15 +108,71 @@ const warningStrings: {[key in CompatibilityWarning]: string} = {
     "Instruments might not sound right.",
   wait15s:
     "The first 15s are a little painful, but it gets better!",
-  speed:
-    "Song plays at the wrong speed",
 };
 
 export const SongButtons: FC<{
   song: RobbSong, warnings: CompatibilityWarning[]
 }> = ({ song, warnings }) => {
   const { play, stop } = useRobbPlayerContext();
-  
+
+  /**
+   * We want to show patterns that are unterminated, and lead into the next
+   * one contiguously in memory. (In turn, that one could potentially lead into
+   * yet another, though I haven't seen that happen yet).
+   *
+   * For the first step of that, we build an array where each element contains
+   * the pattern number of the first subsumed pattern.
+   */
+  const immediateFollowers = new Map<number, number>();
+  for (let i = 0; i < song.patterns.length; i++) {
+    if (song.patterns[i].bytes.length === 0) continue;
+
+    const thisPat = song.patterns[i];
+    let lowestSubsumedPatOffset = Number.MAX_SAFE_INTEGER;
+    let lowestSubsumedPatNumber: (null | number) = null;
+
+    const { bytes, offset: iOffset } = thisPat;
+    const iPatLength = bytes.length;
+
+    for (let j = 0; j < song.patterns.length; j++) {
+      if (i === j) continue;
+      const jOffset = song.patterns[j].offset;
+
+      if (jOffset > iOffset && jOffset < (iOffset + iPatLength)) {
+        if (jOffset < lowestSubsumedPatOffset) {
+          lowestSubsumedPatNumber = j;
+          lowestSubsumedPatOffset = jOffset;
+        }
+      }
+    }
+
+    if (lowestSubsumedPatNumber !== null) {
+      immediateFollowers.set(i, lowestSubsumedPatNumber);
+    }
+  }
+
+  /**
+   * Now we have the immediate-followers lookup, build an array that follows
+   * each pattern to its child, to its grandchild, etc.
+   * 
+   * This is theoretical. I've yet to see in practice any chaining beyond one
+   * successor.
+   * 
+   * An infinite loop isn't possible.
+   */
+  const patternChains: number[][] = [];
+  for (let i = 0; i < song.patterns.length; i++) {
+    const chain = [];
+    let curr = i;
+    while (true) {
+      const next = immediateFollowers.get(curr);
+      if (next === undefined) break;
+      chain.push(next);
+      curr = next;
+    }
+    patternChains.push(chain);
+  }
+
   const instruments = makeIsolatedInstrumentSongs(song).map(
     (song, index) => (
       song
@@ -146,7 +202,7 @@ export const SongButtons: FC<{
               play(song, listeners);
             }}
           >
-            {String(index)}
+            {[index, ...patternChains[index]].map(i => String(i)).join(" → ")}
           </button>
         )
         : null
@@ -157,10 +213,10 @@ export const SongButtons: FC<{
     [0, 1, 2].map(
       (voice) => (
         <div key={voice} className={`voice${voice}`}>
-          Voice <span className="changingNumber">{voice}</span>
+          Track <span className="changingNumber">{voice}</span>
           <span>
             {" "}
-            track pos:
+            pos:
             {" "}
             <span
               id={`track${voice}pos`}

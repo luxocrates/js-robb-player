@@ -11,6 +11,7 @@
  * So far, it's been seen to work with the following HVSC files (though the
  * compatibility of the player with the extracted data is another question):
  * 
+ * MUSICIANS/H/Hubbard_Rob/
  *  - Bump_Set_Spike.sid
  *  - Commando.sid
  *  - Crazy_Comets.sid
@@ -28,6 +29,15 @@
  *  - Proteus.sid
  *  - Spellbound.sid
  *  - Zoids.sid
+ * 
+ *  MUSICIANS/L/Laxity/
+ *  - Min_Axel_F.sid
+ *  - Wizax_tune.sid
+ * 
+ *  MUSICIANS/R/Red_Kimmel_Jeroen/
+ *  - Rhaa_Lovely.sid
+ *  - Touch_Me.sid
+ *  - Dont_Go.sid
  */
 
 import { readFileSync, writeFileSync } from "fs";
@@ -35,7 +45,7 @@ import path from "node:path";
 
 import { ingest_sid } from "./psidIngest";
 import { extractSong } from "./extract";
-import { prettyPrintModule } from "./prettyPrintModule";
+import { prettyPrintSong } from "./prettyPrintModule";
 
 const OUT_DIR = "out";
 
@@ -71,7 +81,7 @@ const { loadAddress, dataOffset } = ingest_sid(file);
 console.log("loadAddress:", loadAddress);
 console.log("dataOffset:", dataOffset);
 
-const extractedSong = extractSong(
+const extractedModule = extractSong(
   file.slice(dataOffset),
   loadAddress,
   song
@@ -81,5 +91,5 @@ const extractedSong = extractSong(
  * Emit the extracted data as a .ts file
  */
 
-writeFileSync(outFilename, prettyPrintModule(extractedSong));
+writeFileSync(outFilename, prettyPrintSong(extractedModule));
 console.log("Success! Wrote to", outFilename);

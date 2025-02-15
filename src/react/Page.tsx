@@ -11,13 +11,14 @@ import masterOfMagic0 from "../robbSongs/Master_of_Magic0";
 import gremlins0 from "../robbSongs/Gremlins0";
 import warhawk0 from "../robbSongs/Warhawk0";
 import oneMan0 from "../robbSongs/One_Man_and_his_Droid0";
+import gerry1 from "../robbSongs/Gerry_the_Germ1";
 
 import { type RobbSong } from "../robbPlayer";
 
 import { SongButtons } from "./SongButtons";
 import { useRobbPlayerContext } from "./RobbPlayerProvider";
 
-export type CompatibilityWarning = "monty" | "wait15s" | "speed";
+export type CompatibilityWarning = "monty" | "wait15s";
 
 const songs: {
   song: RobbSong,
@@ -47,7 +48,7 @@ const songs: {
   {
     song: commando1,
     name: "Commando song 1",
-    warnings: ["monty", "speed"],
+    warnings: ["monty"],
   },
   {
     song: commando2,
@@ -79,6 +80,11 @@ const songs: {
     name: "One Man and his Droid song 0",
     warnings: ["monty"],
   },
+  {
+    song: gerry1,
+    name: "Gerry The Germ song 1",
+    warnings: ["monty"],
+  },
 ];
 
 export const Page = () => {
@@ -108,7 +114,7 @@ export const Page = () => {
         </a>
       </p>
       <p>
-        😔 Apologies — the player doesn’t currently work on iOS
+        😔 Apologies — the player doesn’t currently work on iOS Safari
       </p>
 
       <h3>{songs[songIndex].name}</h3>

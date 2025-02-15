@@ -274,41 +274,43 @@ function findPatterns(tracks: RobbTrack[]): RobbPattern[] {
   /**
    * Extract a pattern, given its number. Note that where patterns fall through,
    * this will keep going capturing until it hits an end. It won't mark where
-   * the fallthrough was.
+   * the fallthrough was, but the offset will let you infer that.
    */
-  function extractPattern(pat: number): number[] {
+  function extractPattern(pat: number): {
+    bytes: number[],
+    offset: number,
+  } {
     const patBaseLo = buffer[los + pat];
     const patBaseHi = buffer[his + pat];
-    // const patBaseLo = buffer[candidates[0].lo + pat];
-    // const patBaseHi = buffer[candidates[0].hi + pat];
-    const patBase = ((patBaseHi << 8) | patBaseLo) - org;
-    const ret: number[] = [];
+
+    const offset = ((patBaseHi << 8) | patBaseLo) - org;
+    const bytes: number[] = [];
 
     patternWalk(
       buffer,
-      patBase,
+      offset,
       (byte1, byte2, byte3, byte4) => {
-        if (byte1 !== undefined) ret.push(byte1);
-        if (byte2 !== undefined) ret.push(byte2);
-        if (byte3 !== undefined) ret.push(byte3);
-        if (byte4 !== undefined) ret.push(byte4);
+        if (byte1 !== undefined) bytes.push(byte1);
+        if (byte2 !== undefined) bytes.push(byte2);
+        if (byte3 !== undefined) bytes.push(byte3);
+        if (byte4 !== undefined) bytes.push(byte4);
       }
     );
 
-    return ret;
+    return { bytes, offset };
   }
 
   // Build an array of patterns by walking through the set, in numeric order,
   // and extracting each individually.
   // Some pattern numbers likely won't have been referenced in the tracks.
   // This can happen, in part, because a module might have had multiple songs.
-  // For these, we'll just emit an empty array for the sake of type safety.
+  // For those, we'll just emit an empty array for the sake of type safety.
   const ret: RobbPattern[] = [];
   for (let pat = 0; pat <= lastPat; pat++) {
     ret.push(
       set.has(pat)
       ? extractPattern(pat)
-      : []
+      : { bytes: [], offset: 0 }
     );
   }
 
@@ -354,12 +356,12 @@ function findInstruments(patterns: RobbPattern[]): (RobbInstrument | undefined)[
 
   // Find all referenced instrument numbers
   const instrsSeen = new Set<number>();
-  for (const pat of patterns) {
+  for (const { bytes } of patterns) {
     // Not all pattern slots are filled
-    if (pat.length === 0) continue;
+    if (bytes.length === 0) continue;
 
     patternWalk(
-      pat,
+      bytes,
       0,
       (_, instrOrPortamentoByte) => {
         if (instrOrPortamentoByte === undefined) return;

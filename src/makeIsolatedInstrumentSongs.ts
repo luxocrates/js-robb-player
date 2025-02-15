@@ -39,20 +39,26 @@ function makeIsolatedInstrumentSong(song: RobbSong, num: number): RobbSong {
   const silentInstrumentIndex = song.instruments.length;
 
   /** A pattern that just repeats silence */
-  const silentPattern: RobbPattern = [
-    // Time/control: Play for $1f, and change instrument ($80)
-    // Instrument number: the index of the `silentInstrument` we'll be adding
-    // Pitch: whatever
-    0x9f, silentInstrumentIndex, 0,
-    // End of pattern
-    0xff,
-  ];
+  const silentPattern: RobbPattern = {
+    offset: 0,
+    bytes: [
+      // Time/control: Play for $1f, and change instrument ($80)
+      // Instrument number: the index of the `silentInstrument` we'll be adding
+      // Pitch: whatever
+      0x9f, silentInstrumentIndex, 0,
+      // End of pattern
+      0xff,
+    ],
+  };
 
-  const oneNotePattern: RobbPattern = [
-    0x9f, num, PITCH,
-    0x5f,
-    0xff,
-  ];
+  const oneNotePattern: RobbPattern = {
+    offset: 0,
+    bytes: [
+      0x9f, num, PITCH,
+      0x5f,
+      0xff,
+    ]
+  };
   
   
   return {

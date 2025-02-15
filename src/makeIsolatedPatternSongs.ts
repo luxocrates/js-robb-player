@@ -7,7 +7,7 @@ import { type RobbPattern, type RobbInstrument, type RobbSong } from "./robbPlay
 export function makeIsolatedPatternSongs(song: RobbSong) {
   return song.patterns.map(
     (pattern, i) => (
-      pattern.length === 0
+      pattern.bytes.length === 0
         ? undefined
         : makeIsolatedPatternSong(song, i)
     )
@@ -47,7 +47,9 @@ function makeIsolatedPatternSong(song: RobbSong, num: number): RobbSong {
   };
   
   /** A pattern that just repeats silence */
-  const silentPattern: RobbPattern = [
+  const silentPattern: RobbPattern = {
+    offset: 0,
+    bytes: [
     // Time/control: Play for $1f, and change instrument ($80)
     0x9f,
     // Instrument number: the index of the `silentInstrument` we'll be adding
@@ -56,7 +58,7 @@ function makeIsolatedPatternSong(song: RobbSong, num: number): RobbSong {
     0,
     // End of pattern
     0xff
-  ];
+  ]};
   
   const silentPatternIndex = song.patterns.length;
 

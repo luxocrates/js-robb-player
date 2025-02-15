@@ -24,7 +24,13 @@ export type RobbSong = {
 export type RobbTrack = number[];
 
 /** array of bytes in groups of up to 4 */
-export type RobbPattern = number[];
+export type RobbPattern = {
+  /** Pattern data */
+  bytes: number[];
+
+  /** Offset in original file (metadata) */
+  offset: number;
+}
 
 export type RobbInstrument = {
   /** Gets mutated by pulsework */
@@ -211,7 +217,7 @@ export function playerTick(
           // );
                   
           // byte1: length (bits 0-4)
-          const byte1 = song.patterns[trackState.pat][trackState.posWithinPat++];
+          const byte1 = song.patterns[trackState.pat].bytes[trackState.posWithinPat++];
           if (byte1 === undefined) throw(`no byte 1, pat 0x${trackState.pat.toString(16)}`);
 
           trackState.byte1Save = byte1;
@@ -231,7 +237,7 @@ export function playerTick(
 
             // byte2 is optional;
             if (byte1 & 0x80) {
-              const byte2 = song.patterns[trackState.pat][trackState.posWithinPat++];
+              const byte2 = song.patterns[trackState.pat].bytes[trackState.posWithinPat++];
               if (byte2 === undefined) throw(`no byte 2, pat 0x${trackState.pat.toString(16)}`);
 
               if (byte2 & 0x80) {
@@ -250,7 +256,7 @@ export function playerTick(
             }
       
             // byte3: pitch
-            const byte3 = song.patterns[trackState.pat][trackState.posWithinPat++];
+            const byte3 = song.patterns[trackState.pat].bytes[trackState.posWithinPat++];
             if (byte3 === undefined) throw(`no byte 3, pat 0x${trackState.pat.toString(16)}`);
       
             trackState.noteNum = byte3;
@@ -289,7 +295,7 @@ export function playerTick(
             pokeSustainRelease(voice, instrument.sustainRelease);
           }
     
-          const byte4 = song.patterns[trackState.pat][trackState.posWithinPat];
+          const byte4 = song.patterns[trackState.pat].bytes[trackState.posWithinPat];
           if (byte4 === 0xff) {
             actionNextInTrack();
             return;

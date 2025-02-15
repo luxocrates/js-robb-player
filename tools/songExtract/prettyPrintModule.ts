@@ -2,12 +2,15 @@ import { type RobbInstrument, type RobbSong } from "../../src/robbPlayer";
 
 const $xx = (n: number) => "$" + n.toString(16).padStart(2, "0");
 
-function dump8(cl: (_:string) => void, arr: number[]) {
+function dump8(cl: (_:string) => void, arr: number[], space: number) {
   let acc: string[] = [];
+
+  let spaces = "";
+  while (space--) spaces += " ";
 
   function emit() {
     if (acc.length === 0) return;
-    cl(`      ${acc.join(", ")},`);
+    cl(`${spaces}${acc.join(", ")},`);
     acc = [];
   }
 
@@ -49,7 +52,7 @@ function dumpInstr(cl: (_:string) => void, i: RobbInstrument) {
   }
 }
 
-export function prettyPrintModule(module: RobbSong) {
+export function prettyPrintSong(song: RobbSong) {
   const acc: string[] = [];
   const cl = (a: string, b?: any) => {
     if (b !== undefined) throw new Error();
@@ -62,10 +65,10 @@ export function prettyPrintModule(module: RobbSong) {
 
   // Tracks
   cl("  tracks: [");
-  for (let i = 0; i < module.tracks.length; i++) {
-    const track = module.tracks[i];
+  for (let i = 0; i < song.tracks.length; i++) {
+    const track = song.tracks[i];
     cl(`    [ // track ${i}`);
-    dump8(cl, track);
+    dump8(cl, track, 6);
     cl("    ],");
   }
 
@@ -73,16 +76,19 @@ export function prettyPrintModule(module: RobbSong) {
 
   // Patterns
   cl("  patterns: [");
-  for (let i = 0; i < module.patterns.length; i++) {
-    const pattern = module.patterns[i];
+  for (let i = 0; i < song.patterns.length; i++) {
+    const { bytes, offset } = song.patterns[i];
 
-    if (pattern.length > 0) {
-      cl(`    [ // pattern ${$xx(i)} (${i})`);
-      dump8(cl, pattern);
-      cl("    ],");
+    if (bytes.length > 0) {
+      cl(`    { // pattern ${$xx(i)} (${i})`);
+      cl(`      offset: ${offset},`);
+      cl(`      bytes: [`);
+      dump8(cl, bytes, 8);
+      cl("      ],");
+      cl("    },");
     }
     else {
-      cl("    [],  // (not referenced)");
+      cl("    { offset: 0, bytes: [] },  // (not referenced)");
     }
   }
 
@@ -90,8 +96,8 @@ export function prettyPrintModule(module: RobbSong) {
 
   // Instruments
   cl("  instruments: [");
-  for (let i = 0; i < module.instruments.length; i++) {
-    const instrument = module.instruments[i];
+  for (let i = 0; i < song.instruments.length; i++) {
+    const instrument = song.instruments[i];
 
     if (instrument) {
       cl(`    { // instrument ${$xx(i)} (${i})`);
@@ -104,16 +110,16 @@ export function prettyPrintModule(module: RobbSong) {
   cl("  ],");
 
   // Slowness
-  cl(`  slowness: ${module.slowness},`);
+  cl(`  slowness: ${song.slowness},`);
 
   // Frequencies
   cl("  freqs: [");
-  dump16(cl, module.freqs);
+  dump16(cl, song.freqs);
   cl("  ],");
 
   cl("};");
   cl("");
-  cl("export default song;");  
+  cl("export default song;");
   cl("");
   
   return acc.join("\n");

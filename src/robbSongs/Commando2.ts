@@ -13,74 +13,86 @@ const song: RobbSong = {
     ],
   ],
   patterns: [
-    [ // pattern $00 (0)
-      0x5f, 0xff,
-    ],
-    [],  // (not referenced)
-    [],  // (not referenced)
-    [],  // (not referenced)
-    [],  // (not referenced)
-    [],  // (not referenced)
-    [],  // (not referenced)
-    [],  // (not referenced)
-    [],  // (not referenced)
-    [],  // (not referenced)
-    [],  // (not referenced)
-    [],  // (not referenced)
-    [],  // (not referenced)
-    [],  // (not referenced)
-    [],  // (not referenced)
-    [],  // (not referenced)
-    [],  // (not referenced)
-    [],  // (not referenced)
-    [],  // (not referenced)
-    [],  // (not referenced)
-    [],  // (not referenced)
-    [],  // (not referenced)
-    [],  // (not referenced)
-    [],  // (not referenced)
-    [],  // (not referenced)
-    [],  // (not referenced)
-    [],  // (not referenced)
-    [],  // (not referenced)
-    [],  // (not referenced)
-    [],  // (not referenced)
-    [],  // (not referenced)
-    [],  // (not referenced)
-    [],  // (not referenced)
-    [],  // (not referenced)
-    [],  // (not referenced)
-    [],  // (not referenced)
-    [],  // (not referenced)
-    [],  // (not referenced)
-    [],  // (not referenced)
-    [],  // (not referenced)
-    [],  // (not referenced)
-    [],  // (not referenced)
-    [ // pattern $2a (42)
-      0x81, 0x0a, 0x34, 0x01, 0x34, 0x03, 0x34, 0x03,
-      0x34, 0x03, 0x34, 0x07, 0x37, 0x07, 0x39, 0x01,
-      0x34, 0x01, 0x34, 0x03, 0x34, 0x03, 0x34, 0x03,
-      0x34, 0x07, 0x37, 0x07, 0x39, 0x41, 0x01, 0x3b,
-      0x03, 0x3b, 0x03, 0x3b, 0x03, 0x3d, 0x0f, 0x3b,
-      0xff,
-    ],
-    [ // pattern $2b (43)
-      0x81, 0x0a, 0x31, 0x01, 0x31, 0x03, 0x31, 0x03,
-      0x31, 0x03, 0x31, 0x07, 0x34, 0x07, 0x36, 0x01,
-      0x31, 0x01, 0x31, 0x03, 0x31, 0x03, 0x31, 0x03,
-      0x31, 0x07, 0x34, 0x07, 0x36, 0x41, 0x01, 0x38,
-      0x03, 0x38, 0x03, 0x38, 0x03, 0x3a, 0x0f, 0x38,
-      0xff,
-    ],
-    [ // pattern $2c (44)
-      0x81, 0x0a, 0x2d, 0x01, 0x2d, 0x03, 0x2d, 0x03,
-      0x2d, 0x03, 0x2d, 0x07, 0x30, 0x07, 0x32, 0x01,
-      0x2d, 0x01, 0x2d, 0x03, 0x2d, 0x03, 0x2d, 0x03,
-      0x2d, 0x07, 0x30, 0x07, 0x32, 0x41, 0x01, 0x34,
-      0x03, 0x34, 0x03, 0x34, 0x03, 0x36, 0x0f, 0x34,
-      0xff,
-    ],
+    { // pattern $00 (0)
+      offset: 2183,
+      bytes: [
+        0x5f, 0xff,
+      ],
+    },
+    { offset: 0, bytes: [] },  // (not referenced)
+    { offset: 0, bytes: [] },  // (not referenced)
+    { offset: 0, bytes: [] },  // (not referenced)
+    { offset: 0, bytes: [] },  // (not referenced)
+    { offset: 0, bytes: [] },  // (not referenced)
+    { offset: 0, bytes: [] },  // (not referenced)
+    { offset: 0, bytes: [] },  // (not referenced)
+    { offset: 0, bytes: [] },  // (not referenced)
+    { offset: 0, bytes: [] },  // (not referenced)
+    { offset: 0, bytes: [] },  // (not referenced)
+    { offset: 0, bytes: [] },  // (not referenced)
+    { offset: 0, bytes: [] },  // (not referenced)
+    { offset: 0, bytes: [] },  // (not referenced)
+    { offset: 0, bytes: [] },  // (not referenced)
+    { offset: 0, bytes: [] },  // (not referenced)
+    { offset: 0, bytes: [] },  // (not referenced)
+    { offset: 0, bytes: [] },  // (not referenced)
+    { offset: 0, bytes: [] },  // (not referenced)
+    { offset: 0, bytes: [] },  // (not referenced)
+    { offset: 0, bytes: [] },  // (not referenced)
+    { offset: 0, bytes: [] },  // (not referenced)
+    { offset: 0, bytes: [] },  // (not referenced)
+    { offset: 0, bytes: [] },  // (not referenced)
+    { offset: 0, bytes: [] },  // (not referenced)
+    { offset: 0, bytes: [] },  // (not referenced)
+    { offset: 0, bytes: [] },  // (not referenced)
+    { offset: 0, bytes: [] },  // (not referenced)
+    { offset: 0, bytes: [] },  // (not referenced)
+    { offset: 0, bytes: [] },  // (not referenced)
+    { offset: 0, bytes: [] },  // (not referenced)
+    { offset: 0, bytes: [] },  // (not referenced)
+    { offset: 0, bytes: [] },  // (not referenced)
+    { offset: 0, bytes: [] },  // (not referenced)
+    { offset: 0, bytes: [] },  // (not referenced)
+    { offset: 0, bytes: [] },  // (not referenced)
+    { offset: 0, bytes: [] },  // (not referenced)
+    { offset: 0, bytes: [] },  // (not referenced)
+    { offset: 0, bytes: [] },  // (not referenced)
+    { offset: 0, bytes: [] },  // (not referenced)
+    { offset: 0, bytes: [] },  // (not referenced)
+    { offset: 0, bytes: [] },  // (not referenced)
+    { // pattern $2a (42)
+      offset: 3729,
+      bytes: [
+        0x81, 0x0a, 0x34, 0x01, 0x34, 0x03, 0x34, 0x03,
+        0x34, 0x03, 0x34, 0x07, 0x37, 0x07, 0x39, 0x01,
+        0x34, 0x01, 0x34, 0x03, 0x34, 0x03, 0x34, 0x03,
+        0x34, 0x07, 0x37, 0x07, 0x39, 0x41, 0x01, 0x3b,
+        0x03, 0x3b, 0x03, 0x3b, 0x03, 0x3d, 0x0f, 0x3b,
+        0xff,
+      ],
+    },
+    { // pattern $2b (43)
+      offset: 3770,
+      bytes: [
+        0x81, 0x0a, 0x31, 0x01, 0x31, 0x03, 0x31, 0x03,
+        0x31, 0x03, 0x31, 0x07, 0x34, 0x07, 0x36, 0x01,
+        0x31, 0x01, 0x31, 0x03, 0x31, 0x03, 0x31, 0x03,
+        0x31, 0x07, 0x34, 0x07, 0x36, 0x41, 0x01, 0x38,
+        0x03, 0x38, 0x03, 0x38, 0x03, 0x3a, 0x0f, 0x38,
+        0xff,
+      ],
+    },
+    { // pattern $2c (44)
+      offset: 3811,
+      bytes: [
+        0x81, 0x0a, 0x2d, 0x01, 0x2d, 0x03, 0x2d, 0x03,
+        0x2d, 0x03, 0x2d, 0x07, 0x30, 0x07, 0x32, 0x01,
+        0x2d, 0x01, 0x2d, 0x03, 0x2d, 0x03, 0x2d, 0x03,
+        0x2d, 0x07, 0x30, 0x07, 0x32, 0x41, 0x01, 0x34,
+        0x03, 0x34, 0x03, 0x34, 0x03, 0x36, 0x0f, 0x34,
+        0xff,
+      ],
+    },
   ],
   instruments: [
     undefined,
