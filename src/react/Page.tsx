@@ -12,6 +12,7 @@ import gremlins0 from "../robbSongs/Gremlins0";
 import warhawk0 from "../robbSongs/Warhawk0";
 import oneMan0 from "../robbSongs/One_Man_and_his_Droid0";
 import gerry1 from "../robbSongs/Gerry_the_Germ1";
+import zoids0 from "../robbSongs/Zoids0";
 
 import { type RobbSong } from "../robbPlayer";
 
@@ -83,6 +84,11 @@ const songs: {
   {
     song: gerry1,
     name: "Gerry The Germ song 1",
+    warnings: ["monty"],
+  },
+  {
+    song: zoids0,
+    name: "Zoids song 0",
     warnings: ["monty"],
   },
 ];
