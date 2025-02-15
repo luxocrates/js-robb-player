@@ -102,5 +102,5 @@ button:focus-visible {
 }
 
 button {
-  transition: transform 50ms ease-out, filter 50ms ease-out;
+  transition: transform 50ms ease-out;
 }

@@ -188,8 +188,8 @@ export function playerTick(
           // pat $ff = loop
           if (trackState.pat === 0xff) {
             trackState.posWithinTrack = 0;
-            // refetch
-            trackState.pat = song.tracks[voice][trackState.posWithinTrack];
+            actionNextInTrack();
+            return;
           }
           // pat $fe = done
           if (trackState.pat === 0xfe) {
