@@ -118,6 +118,22 @@ function makeDefaultPlayerState(): PlayerState {
 
 let playerState: PlayerState = makeDefaultPlayerState();
 
+/**
+ * A non-silent instrument used where a note is played before an instrument for
+ * that voice has been set. We do this for our pattern-isolating buttons, but
+ * MUSICIANS/L/Laxity/Min_Axel_F.sid seems to do this for real.
+ */
+export const placeholderInstrument: RobbInstrument = {
+  pulseWidthLo:   0x00,
+  pulseWidthHi:   0x08,
+  controlReg:     0x41,
+  attackDecay:    0x08,
+  sustainRelease: 0x50,
+  vibratoDepth:   0x00,
+  pulseSpeed:     0x00,
+  fx:             0x00,
+};
+
 export function playerInit(song: RobbSong) {
   maybeSong = song;
   playerState = makeDefaultPlayerState();
@@ -284,7 +300,7 @@ export function playerTick(
 
           {
             // Apply instrument initial values
-            const instrument = song.instruments[trackState.instNum]!;
+            const instrument = song.instruments[trackState.instNum]! || placeholderInstrument;
 
             trackState.voicectrl = instrument.controlReg;
             
@@ -354,7 +370,7 @@ export function playerTick(
      * indeed it turns out that way.
      */
     function vibrato() {
-      const { vibratoDepth } = song.instruments[trackState.instNum]!;
+      const { vibratoDepth } = song.instruments[trackState.instNum]! || placeholderInstrument;
       if (vibratoDepth === 0) return;
       // Don't apply when length < 8
 
@@ -378,7 +394,7 @@ export function playerTick(
 
     function pulsework() {
       const instrument = song.instruments[trackState.instNum]!;
-      const { pulseSpeed } = instrument;
+      const { pulseSpeed } = instrument || placeholderInstrument;
       if (pulseSpeed === 0) return;
 
       if (--trackState.pulseDelay < 0) {
@@ -418,7 +434,7 @@ export function playerTick(
     }
 
     function fx() {
-      const { fx } = song.instruments[trackState.instNum]!;
+      const { fx } = song.instruments[trackState.instNum]! || placeholderInstrument;
 
       // Drums
       if (fx & 0x1) {

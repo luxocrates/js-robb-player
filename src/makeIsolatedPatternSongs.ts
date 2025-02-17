@@ -1,4 +1,9 @@
-import { type RobbPattern, type RobbInstrument, type RobbSong } from "./robbPlayer";
+import {
+  type RobbPattern,
+  type RobbInstrument,
+  type RobbSong,
+  placeholderInstrument
+} from "./robbPlayer";
 
 /**
  * Given a song, creates an array of new songs that each play just one pattern
@@ -28,22 +33,6 @@ function makeIsolatedPatternSong(song: RobbSong, num: number): RobbSong {
     vibratoDepth: 0,
     pulseSpeed: 0,
     fx: 0,
-  };
-
-  /**
-   * A non-silent instrument to used as instrument `num` if one wasn't defined.
-   * This is needed because a pattern might not start with an instrument change,
-   * so we need an audible placeholder in the default slot.
-   */
-  const placeholderInstrument: RobbInstrument = {
-    pulseWidthLo:   0x00,
-    pulseWidthHi:   0x08,
-    controlReg:     0x41,
-    attackDecay:    0x08,
-    sustainRelease: 0x50,
-    vibratoDepth:   0x00,
-    pulseSpeed:     0x00,
-    fx:             0x00,
   };
   
   /** A pattern that just repeats silence */

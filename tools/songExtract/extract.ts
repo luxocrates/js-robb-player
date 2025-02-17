@@ -128,8 +128,9 @@ function patternWalk(
   }
 }
 
-function findSongsOffset() {
-  // To get songs, dissass. has this:
+function findSongOffset1(): number | null {
+  // To get songs, Monty on the Run's disassembly. has this:
+  // (Note: I think Anthony had currtrkhi and currtrklo names swapped)
 
   /*
   initmusic =*
@@ -151,7 +152,7 @@ function findSongsOffset() {
     bne -
   */
 
-  // Dump has this:
+  // ...for which the dump has this:
 
   /*
   $955a: 0a         ASL
@@ -177,15 +178,49 @@ function findSongsOffset() {
       0x99,
     ]
   ) === null) {
-    throw new Error("Can't find songs");
+    return null;
   }
 
   const addr = (hi << 8) | lo;
   return addr - org + (songPick * 6);
 }
 
+function findSongOffset2(): number | null {
+  // This was an alternative way of pointing to the songs, seen often in
+  // single-song players like Thing On A Spring, but we take songPick into
+  // consideration too. For many modules (Action Biker, Samantha Fox Strip
+  // Poker), it works.
+  
+  let loPointers_hi = 0;
+  let loPointers_lo = 0;
+  let hiPointers_hi = 0;  // Not used now, but maybe later...
+  let hiPointers_lo = 0;  // Not used now, but maybe later...
+
+  if (hunt(
+    buffer,
+    [
+      0xbd,                           // lda loPointers,x
+      (x) => { loPointers_lo = x; },
+      (x) => { loPointers_hi = x; }, 
+      0x85, null,                     // sta $xx (varies)
+      0xbd,                           // lda currtrklo,x
+      (x) => { hiPointers_lo = x; },
+      (x) => { hiPointers_hi = x; }, 
+      0x85, null,                     // sta $xx (varies)
+    ]
+  ) === null) {
+    return null;
+  }
+
+  return (songPick * 6) + ((loPointers_hi << 8) | loPointers_lo) - org;
+}
+
 function findTracks(): RobbTrack[] {
-  const songsOffset = findSongsOffset();
+  const songsOffset = findSongOffset1() || findSongOffset2();
+  if (!songsOffset) {
+    throw new Error("Can't find song tracks");
+  }
+
   const ret: RobbTrack[] = [];
 
   for (let track = 0; track < 3; track++) {
@@ -449,7 +484,8 @@ function findSlowness() {
     console.error("Can't find slowness, using default");
   }
 
-  if (hi === 0 && lo === 0) return 1;
+  // Default slowness
+  if (hi === 0 && lo === 0) return 2;
 
   const addr = (hi << 8) | lo;
   const slowness = buffer[addr - org];

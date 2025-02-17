@@ -148,8 +148,9 @@ export const SongButtons: FC<{
 
   /**
    * We want to show patterns that are unterminated, and lead into the next
-   * one contiguously in memory. (In turn, that one could potentially lead into
-   * yet another, though I haven't seen that happen yet).
+   * one contiguously in memory; which, in turn, that one could potentially
+   * lead into yet another. Of the songs I've seen, Zoids song 0 currently holds
+   * the record at a chain of 3).
    *
    * For the first step of that, we build an array where each element contains
    * the pattern number of the first subsumed pattern.
@@ -186,10 +187,7 @@ export const SongButtons: FC<{
    * Now we have the immediate-followers lookup, build an array that follows
    * each pattern to its child, to its grandchild, etc.
    * 
-   * This is theoretical. I've yet to see in practice any chaining beyond one
-   * successor.
-   * 
-   * An infinite loop isn't possible.
+   * (No, an infinite loop isn't possible.)
    */
   const patternChains: number[][] = [];
   for (let i = 0; i < song.patterns.length; i++) {
