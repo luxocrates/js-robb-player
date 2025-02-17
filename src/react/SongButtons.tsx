@@ -291,7 +291,11 @@ export const SongButtons: FC<{
               {[pat, ...patternChains[pat]].map(i => String(i)).join(" → ")}
             </button>
           )
-          : null
+          : (
+            <button disabled key={index}>
+              {pat}
+            </button>
+          )
       )
     );
   }

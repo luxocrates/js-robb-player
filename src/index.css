@@ -45,7 +45,7 @@ button {
   transition: border-color 0.25s;
   margin: 3px;
 }
-button:hover {
+button:hover:not(:disabled) {
   border-color: #646cff;
 }
 button:focus,

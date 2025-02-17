@@ -45,7 +45,7 @@ const songs: {
   {
     song: thing0,
     name: "Thing On A Spring song 0",
-    warnings: [],
+    warnings: ["missingFx"],
   },
   {
     // Beware: different HVSC collections have quite different rips
@@ -81,7 +81,7 @@ const songs: {
   {
     song: gremlins0,
     name: "Gremlins song 0",
-    warnings: ["missingFx"],
+    warnings: [],
   },
   {
     song: warhawk0,

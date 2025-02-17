@@ -631,6 +631,28 @@ export function extractSong(
   const tracks = findTracks();
   const patterns = findPatterns(tracks);
   const instruments = findInstruments(patterns);
+  const fx = findEffects();
+
+  // Audit the fxSeen against the instruments
+  {
+    let suppliedMask = 0;
+    let demandedMask = 0;
+
+    for (const instrument of instruments) {
+      if (!instrument) continue;
+      demandedMask |= instrument.fx;
+    }
+
+    for (const { mask } of fx) {
+      suppliedMask |= mask;
+    }
+
+    if (suppliedMask !== demandedMask) {
+      console.warn("Not all of the effects were identified.");
+      console.warn(`Supplied: $${suppliedMask.toString(16).padStart(2, "0")}`);
+      console.warn(`Demanded: $${demandedMask.toString(16).padStart(2, "0")}`);
+    }
+  }
 
   return {
     tracks,
@@ -638,6 +660,6 @@ export function extractSong(
     instruments,
     timescale: findTimescale(),
     freqs: findFreqs(),
-    fx: findEffects(),
+    fx,
   };
 }
