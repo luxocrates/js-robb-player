@@ -13,8 +13,14 @@ export type RobbSong = {
   tracks: RobbTrack[];
   patterns: RobbPattern[];
   instruments: (RobbInstrument | undefined)[];
-  slowness: number;
+  timescale: number;
   freqs: number[];
+  fx: RobbFx[];
+};
+
+export type RobbFx = {
+  type: "arpeggio" | "drums" | "skydive" | "zipup";
+  mask: number;
 };
 
 /**
@@ -350,6 +356,92 @@ export function playerTick(
   }
 
   function soundwork(voice: number) {
+
+    function fxSkydive() {
+      if (playerState.tick & 1) {
+        if (trackState.freqSaveHi > 0) {
+          trackState.freqSaveHi--;
+          pokeFreqHi(voice, trackState.freqSaveHi);
+        }
+      }
+    }
+
+    function fxZipup() {
+      if (trackState.freqSaveHi < 256) {
+        trackState.freqSaveHi++;
+        pokeFreqHi(voice, trackState.freqSaveHi);
+      }
+    }
+
+    function fxArpeggio() {
+      const semitonesAdd = (playerState.tick & 1) * 12;
+      const pitch = trackState.noteNum + semitonesAdd;
+
+      pokeFreqLo(voice, loByte(song.freqs[pitch]));
+      pokeFreqHi(voice, hiByte(song.freqs[pitch]));
+    }
+
+    function fxDrums() {
+      // TODO: I was incredibly tired when I wrote this implementation.
+      // It will need some scrutinous auditing.
+
+      /*
+        lda savefreqhi,x ;don't bother if freq
+        beq skydive      ;can't go any lower
+
+        lda lengthleft,x ;or if the note has
+        beq skydive      ;finished
+      */
+      if ((trackState.freqSaveHi > 0) && (trackState.noteRemain > 0)) {
+        
+        /*
+          lda savelnthcc,x ;check if this is the
+          and #$1f         ;first vbl for this
+          sec              ;instrument-note
+          sbc #$01
+          cmp lengthleft,x
+          ldy tmpregofst
+          bcc firstime
+
+          lda savefreqhi,x ;not the first time
+          dec savefreqhi,x ;so dec freqhi for
+          sta $d401,y      ;drum sound
+        */
+
+        if (trackState.noteRemain) {
+
+          if (
+            // first time
+            (
+              trackState.noteRemain === 
+                ((trackState.byte1Save & 0x1f) - 1)
+            )
+            // or voicectrl is zero (ignoring kickoff bit)
+            || ((trackState.voicectrl & 0xfe) === 0)
+            ) {
+            // noise
+            /*
+              lda voicectrl,x  ;if ctrlreg is 0 then
+              and #$fe         ;noise is used always
+              bne dumpctrl
+            */
+
+            pokeCtrl(voice, 0x80);
+          }
+          else {
+            /*
+              dec savefreqhi,x ;so dec freqhi for
+              sta $d401,y      ;drum sound
+            */
+          
+            trackState.freqSaveHi--;
+            pokeFreqHi(voice, trackState.freqSaveHi);
+            pokeCtrl(voice, trackState.voicectrl);
+          }
+        }
+      }
+    }
+
     const trackState = playerState.trackStates[voice];
     if (trackState.noteRemain === 0) {
 
@@ -436,90 +528,17 @@ export function playerTick(
     function fx() {
       const { fx } = song.instruments[trackState.instNum]! || placeholderInstrument;
 
-      // Drums
-      if (fx & 0x1) {
+      const fxHandlers: {[key in RobbFx["type"]]: (fx: RobbFx) => void} = {
+        arpeggio: fxArpeggio,
+        drums: fxDrums,
+        skydive: fxSkydive,
+        zipup: fxZipup,
+      };      
 
-        // TODO: I was incredibly tired when I wrote this implementation.
-        // It will need some scrutinous auditing.
-
-        /*
-          lda savefreqhi,x ;don't bother if freq
-          beq skydive      ;can't go any lower
-
-          lda lengthleft,x ;or if the note has
-          beq skydive      ;finished
-        */
-        if ((trackState.freqSaveHi > 0) && (trackState.noteRemain > 0)) {
-          
-          /*
-            lda savelnthcc,x ;check if this is the
-            and #$1f         ;first vbl for this
-            sec              ;instrument-note
-            sbc #$01
-            cmp lengthleft,x
-            ldy tmpregofst
-            bcc firstime
-
-            lda savefreqhi,x ;not the first time
-            dec savefreqhi,x ;so dec freqhi for
-            sta $d401,y      ;drum sound
-          */
-
-          if (trackState.noteRemain) {
-
-            if (
-              // first time
-              (
-                trackState.noteRemain === 
-                  ((trackState.byte1Save & 0x1f) - 1)
-              )
-              // or voicectrl is zero (ignoring kickoff bit)
-              || ((trackState.voicectrl & 0xfe) === 0)
-              ) {
-              // noise
-              /*
-                lda voicectrl,x  ;if ctrlreg is 0 then
-                and #$fe         ;noise is used always
-                bne dumpctrl
-              */
-
-              pokeCtrl(voice, 0x80);
-            }
-            else {
-              /*
-                dec savefreqhi,x ;so dec freqhi for
-                sta $d401,y      ;drum sound
-              */
-            
-              trackState.freqSaveHi--;
-              pokeFreqHi(voice, trackState.freqSaveHi);
-              pokeCtrl(voice, trackState.voicectrl);
-            }
-          }
-        }
-      }
-
-      // Skydive -- it seems the other Hubbard tracks use this bit for something
-      // else, making this routine have a very weird effect on them.
-      if (fx & 2) {          
-        if (playerState.tick & 1) {
-          // skydives and drums too
-          if (trackState.freqSaveHi > 0) {
-            trackState.freqSaveHi--;
-            pokeFreqHi(voice, trackState.freqSaveHi);
-          }
-        }
-      }
-
-      // Octave arpeggio
-      if (fx & 0x4) {
-
-        const semitonesAdd = (playerState.tick & 1) * 12;
-
-        const pitch = trackState.noteNum + semitonesAdd;
-
-        pokeFreqLo(voice, loByte(song.freqs[pitch]));
-        pokeFreqHi(voice, hiByte(song.freqs[pitch]));
+      // The order of effects listed in the song potentially matters
+      for (const effect of song.fx) {
+        const { type, mask } = effect;
+        if (fx & mask) fxHandlers[type](effect);
       }
     }
 
@@ -549,7 +568,7 @@ export function playerTick(
   }
 
   if (--playerState.ticksUntilTrackwork < 0) {
-    playerState.ticksUntilTrackwork = song.slowness;
+    playerState.ticksUntilTrackwork = song.timescale;
     trackwork();
   }
   else {

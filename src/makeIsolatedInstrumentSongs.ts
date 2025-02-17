@@ -79,7 +79,8 @@ function makeIsolatedInstrumentSong(song: RobbSong, num: number): RobbSong {
       silentInstrument,
     ],
     freqs: [...song.freqs],
-    slowness: 2,
+    timescale: 2,
+    fx: [...song.fx],
   };
 }
 

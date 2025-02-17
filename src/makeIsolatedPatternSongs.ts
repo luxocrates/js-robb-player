@@ -70,6 +70,7 @@ function makeIsolatedPatternSong(song: RobbSong, num: number): RobbSong {
       silentInstrument,
     ],
     freqs: [...song.freqs],
-    slowness: song.slowness,
+    timescale: song.timescale,
+    fx: [...song.fx],
   };
 }

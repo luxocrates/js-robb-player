@@ -11,7 +11,7 @@
  * So far, it's been seen to work with the following HVSC files (though the
  * compatibility of the player with the extracted data is another question):
  * 
- * (*1): can't extract slowness
+ * (*1): can't extract timescale
  * (*2): has silent instruments
  * (*3): thinks it extracts, but actually gets wrong data
  * (*4): extracted song unlike any known songs

@@ -109,18 +109,26 @@ export function prettyPrintSong(song: RobbSong) {
   }
   cl("  ],");
 
-  // Slowness
-  cl(`  slowness: ${song.slowness},`);
+  // Timescale
+  cl(`  timescale: ${song.timescale},`);
 
   // Frequencies
   cl("  freqs: [");
   dump16(cl, song.freqs);
   cl("  ],");
 
+  // Effects
+  cl("  fx: [");
+  song.fx.forEach(
+    (spec) => cl(`    ${JSON.stringify(spec)},`)
+  );
+  cl("  ],");
+
   cl("};");
   cl("");
   cl("export default song;");
   cl("");
-  
+
+
   return acc.join("\n");
 }

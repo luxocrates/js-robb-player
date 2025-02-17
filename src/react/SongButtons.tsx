@@ -92,9 +92,8 @@ function makeListeners(
 };
 
 const warningStrings: {[key in CompatibilityWarning]: string} = {
-  monty:
-    "The player was written for Monty On The Run’s effects set. " +
-    "Instruments might not sound right.",
+  missingFx:
+    "The player may be missing some instrument effects for this song",
   wait15s:
     "The first 15s are a little painful, but it gets better!",
 };

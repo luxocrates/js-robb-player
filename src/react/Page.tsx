@@ -3,6 +3,7 @@ import { useState } from "react";
 import monty0 from "../robbSongs/Monty_on_the_Run0";
 import monty1 from "../robbSongs/Monty_on_the_Run1";
 import monty2 from "../robbSongs/Monty_on_the_Run2";
+import thing0 from "../robbSongs/Thing_on_a_Spring0";
 import commando0 from "../robbSongs/Commando0";
 import commando1 from "../robbSongs/Commando1";
 import commando2 from "../robbSongs/Commando2";
@@ -19,7 +20,7 @@ import { type RobbSong } from "../robbPlayer";
 import { SongButtons } from "./SongButtons";
 import { useRobbPlayerContext } from "./RobbPlayerProvider";
 
-export type CompatibilityWarning = "monty" | "wait15s";
+export type CompatibilityWarning = "missingFx" | "wait15s";
 
 const songs: {
   song: RobbSong,
@@ -42,54 +43,65 @@ const songs: {
     warnings: [],
   },
   {
+    song: thing0,
+    name: "Thing On A Spring song 0",
+    warnings: [],
+  },
+  {
+    // Beware: different HVSC collections have quite different rips
+    // Speed extraction varies between them
     song: commando0,
     name: "Commando song 0",
-    warnings: ["monty"],
+    warnings: ["missingFx"],
   },
   {
+    // Beware: different HVSC collections have quite different rips
+    // Speed extraction varies between them
     song: commando1,
     name: "Commando song 1",
-    warnings: ["monty"],
+    warnings: ["missingFx"],
   },
   {
+    // Beware: different HVSC collections have quite different rips
+    // Speed extraction varies between them
     song: commando2,
     name: "Commando song 2",
-    warnings: ["monty"],
+    warnings: ["missingFx"],
   },
   {
     song: crazyComets0,
     name: "Crazy Comets song 0",
-    warnings: ["monty"],
+    warnings: ["missingFx"],
   },
   {
     song: masterOfMagic0,
     name: "Master Of Magic song 0",
-    warnings: ["monty"],
+    warnings: ["missingFx"],
   },
   {
     song: gremlins0,
     name: "Gremlins song 0",
-    warnings: ["monty"],
+    warnings: ["missingFx"],
   },
   {
     song: warhawk0,
     name: "Warhawk song 0",
-    warnings: ["monty", "wait15s"],
+    warnings: ["missingFx", "wait15s"],
   },
   {
     song: oneMan0,
     name: "One Man and his Droid song 0",
-    warnings: ["monty"],
+    warnings: ["missingFx"],
   },
   {
     song: gerry1,
     name: "Gerry The Germ song 1",
-    warnings: ["monty"],
+    warnings: ["missingFx"],
   },
   {
     song: zoids0,
     name: "Zoids song 0",
-    warnings: ["monty"],
+    warnings: ["missingFx"],
   },
 ];
 
@@ -120,7 +132,7 @@ export const Page = () => {
         </a>
       </p>
       <p>
-        😔 Apologies — the player doesn’t currently work on iOS Safari
+        😔 Apologies — the player usually doesn’t work on iOS
       </p>
 
       <h3>{songs[songIndex].name}</h3>

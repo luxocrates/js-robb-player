@@ -3,6 +3,7 @@ import {
   type RobbSong,
   type RobbPattern,
   type RobbTrack,
+  type RobbFx,
 } from "../../src/robbPlayer";
 
 let buffer: number[] = [];
@@ -54,7 +55,14 @@ function hunt(
 
   // If there's one and only one file offset that matches, we can proceed.
   // Otherwise, drop out.
-  if (candidates.length !== 1) {
+  if (candidates.length < 1) {
+    return null;
+  }
+  if (candidates.length > 1) {
+    console.warn(
+      "*** Multiple matching candidates:",
+      candidates.map((x) => `0x${(x + org).toString(16)}`)
+    );
     return null;
   }
 
@@ -441,7 +449,7 @@ function findInstruments(patterns: RobbPattern[]): (RobbInstrument | undefined)[
   return ret;
 }
 
-function findSlowness() {
+function findTimescale() {
   // For resetspd we'll use:
   /*
     contplay =*
@@ -481,16 +489,16 @@ function findSlowness() {
       (x) => { hi = x; },
       0x8d,
     ]) === null) {
-    console.error("Can't find slowness, using default");
+    console.error("Can't find timescale, using default");
   }
 
-  // Default slowness
+  // Default timescale
   if (hi === 0 && lo === 0) return 2;
 
   const addr = (hi << 8) | lo;
-  const slowness = buffer[addr - org];
+  const timescale = buffer[addr - org];
 
-  return slowness;  
+  return timescale;  
 }
 
 function findFreqs() {
@@ -514,6 +522,99 @@ function findFreqs() {
   );
 }
 
+function findEffects(): RobbFx[] {
+  // Remember, order matters!
+  const acc: RobbFx[] = [];
+
+  // We'll just assume for the time being that bit 0 is always drums.
+  // Later we can make a detector for it.
+  acc.push({
+    type: "drums",
+    mask: 0x01,
+  });
+
+  // Iterate through all the effect-finder functions. If any match,
+  // slot it in according to which bit it targets.
+  for (const fn of (
+    [
+      findSkydive,
+      findZipUp,
+    ] as ((() => (RobbFx | null))[])  
+  )) {
+    const fx = fn();
+    if (fx !== null) acc.push(fx);
+  }
+
+  // Also assume that bit 2 is always arpeggios. Monty had the arpeggios
+  // performed after the skydive, so we'll place it here...
+  acc.push({
+    type: "arpeggio",
+    mask: 0x04,
+  });
+
+  return acc;
+}
+
+/** Looks for Thing On A Spring's zip up */
+function findZipUp(): RobbFx | null {
+  let mask = 0;
+  const offset = hunt(
+    buffer,
+    [
+      // Disassembly                Thing On A Spring
+      //
+      0xad, null, null,           // LDA $c49b       Read instrument FX bit
+      0x29, (x) => { mask = x; }, // AND #$02        Is bit 1 set?
+      0xf0, null,                 // BEQ $c2df       If not, move on to next effect
+      0xbd, null, null,           // LDA $c498,X     Read saved frequency high byte
+      0xf0, null,                 // BEQ $c2df       If it's already looped, move on
+      0xfe, null, null,           // INC $c498,X     Increment it
+      0xac, null, null,           // LDY $c46c       Get offset for voice number
+      0x99, null, null,           // STA $d401,Y     Commit the high byte
+      ]
+  );
+
+  if (offset === null) return null;
+  console.log("Found Thing On A Spring zip-up, mask", mask);
+
+  return { type: "zipup", mask };
+}
+
+/** Looks for Monty On The Run's 0x02 skydive */
+function findSkydive(): RobbFx | null {
+  let mask = 0;
+  let ticksBetween = 0;
+
+  const offset = hunt(
+    buffer,
+    [
+      // Disassembly                         Anthony's notes
+      //
+      0xad, null, null,                   // lda instrfx      ;check if skydive
+      0x29, (x) => { mask = x; },         // and (bitmask)
+      0xf0, null,                         // beq octarp
+      0xad, null, null,                   // lda counter      ;every 2nd vbl
+      0x29, (x) => { ticksBetween = x; }, // and (ticks between)
+      0xf0, null,                         // beq octarp
+      0xbd, null, null,                   // lda savefreqhi,x ;check if skydive
+      0xf0, null,                         // beq octrp        ;already complete
+      0xde, null, null,                   // dec savefreqhi,x ;decr and save the
+      0xac, null, null,                   // ldy tmpregofst   ;high byte freq
+      0x99, 0x01, 0xd4,                   // sta $d401,y
+    ]
+  );
+
+  if (offset === null) return null;
+  console.log("Found Monty On The Run skydive, mask", mask);
+
+  // It's actually a mask
+  if (ticksBetween !== 1) {
+    throw new Error("Bad assumption about ticksBetween");
+  }
+
+  return { type: "skydive", mask };
+}
+
 /**
  * Looks for structures in a memory dump and converts them to semantic
  * data for the player
@@ -535,7 +636,8 @@ export function extractSong(
     tracks,
     patterns,
     instruments,
-    slowness: findSlowness(),
+    timescale: findTimescale(),
     freqs: findFreqs(),
+    fx: findEffects(),
   };
 }

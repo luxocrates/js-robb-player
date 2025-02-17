@@ -280,7 +280,7 @@ const song: RobbSong = {
       fx:             0x00,
     },
   ],
-  slowness: 2,
+  timescale: 2,
   freqs: [
     0x0116, 0x0127, 0x0138, 0x014b,
     0x015f, 0x0173, 0x018a, 0x01a1,
@@ -314,6 +314,10 @@ const song: RobbSong = {
     0x0001, 0x0201, 0xa802, 0x2280,
     0x1015, 0xebd0, 0x006e, 0x0000,
     0x4008, 0x008e, 0xffff, 0x006f,
+  ],
+  fx: [
+    {"type":"drums","mask":1},
+    {"type":"arpeggio","mask":4},
   ],
 };
 
