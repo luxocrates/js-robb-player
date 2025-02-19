@@ -130,3 +130,16 @@ button.radio.selected {
 h4 {
   margin-top: 40px;
 }
+
+button.collapse-button {
+  border-radius: 100%;
+  background: transparent;
+  padding: 0;
+  width: 38px;
+  height: 38px;
+  transition: transform 150ms ease-out;
+}
+
+button.collapse-button.expanded {
+  transform: rotate(90deg);
+}
